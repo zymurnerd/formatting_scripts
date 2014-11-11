@@ -10,6 +10,7 @@ class Formatter(object):
         
     def __init__(self, contents):
         self.contents = contents
+        self.modified = ''
         
 class MethodDivider(Formatter):
     
@@ -26,25 +27,32 @@ class MethodDivider(Formatter):
         match = re.search(r'(\s{4}\bdef\b)', self.contents, re.M)
         
         if match:
-            self.contents = self.contents[0:match.start(1)] + "    #-----------------------------------------------------------------\r\n" + self.contents[match.start(1):]
+            self.modified = self.contents[0:match.start(1)] + "    #-----------------------------------------------------------------\n" + self.contents[match.start(1):]
             print match.start(1)
         else:
             print 'oops!'
 
 #---------------------------------------------------------------------
 def main(args):
+    #----------------------------------------------------------------
+    # If there isn't a directory provided from the command line,
+    # then use the dummy file directory.
+    # TODO: WCD
+    # This is here for testing in IDE. Remove this later.
+    #----------------------------------------------------------------
     if len(args) == 1:
         print "No path provided."
         print "Usage: PATH"
-        #return 0
-        working_dir = "D:/formatting_scripts/dummy_files/export.py"
+        working_dir = "..\\dummy_files"
     else: 
         working_dir = args[1]
-    
+
     for root, dirs, files, in os.walk(working_dir):
-        #make backup directory
-        if not os.path.exists(root+'/backups'):
-            os.makedirs(root+'/backups')
+        #-------------------------------------------------------------
+        # make a backup directory
+        #-------------------------------------------------------------
+        if not os.path.exists(root+'\\backups'):
+            os.makedirs(root+'\\backups')
             
         for file in files:
             if file.endswith('.py') or file.endswith('.pyw'):
@@ -52,10 +60,11 @@ def main(args):
                 print path
                 f = open(path, 'r+')
                 file_contents = f.read()
-                
+                f.close()
+
                 #create back up file
                 name = path.split('.')
-                backup = open(root+'/backups/'+os.path.basename(path)+'.bak', 'w')
+                backup = open(root+'\\backups\\'+os.path.basename(path)+'.bak', 'w')
                 backup.write(file_contents)
                 backup.close()
                 
@@ -63,8 +72,13 @@ def main(args):
                 print method_formatter.contents
                 for each in method_formatter:
                     pass
+                print method_formatter.modified
+                f = open(path, 'w+')
+                f.write(method_formatter.modified)
+                f.close()
                 del method_formatter
-    
+
+    return 0
     
 if __name__ == '__main__':
     sys.exit( main(sys.argv) )
