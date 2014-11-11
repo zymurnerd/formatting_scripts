@@ -36,9 +36,10 @@ def main(args):
     if len(args) == 1:
         print "No path provided."
         print "Usage: PATH"
-        return 0
-    
-    working_dir = args[1]
+        #return 0
+        working_dir = "D:/formatting_scripts/dummy_files/export.py"
+    else: 
+        working_dir = args[1]
     
     for root, dirs, files, in os.walk(working_dir):
         #make backup directory
